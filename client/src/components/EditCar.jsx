@@ -24,7 +24,7 @@ const EditCar = () => {
 
   const HandleClicked = () => {
     axios
-    .post("http://localhost:3005/car/updatecar", data)
+    .post("https://attryb-project.onrender.com/car/updatecar", data)
     .then((res) => {
       if (res.status == 200) {
        console.log("res",res)

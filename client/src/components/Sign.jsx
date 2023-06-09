@@ -12,7 +12,7 @@ const Sign = () => {
 
   const handleFormSubmit = () => {
     axios
-      .post("http://localhost:3005/users/signup", data)
+      .post("https://attryb-project.onrender.com/users/signup", data)
       .then((res) => {
         console.log({ res });
         if (res.data.status) {

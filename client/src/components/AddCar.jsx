@@ -19,7 +19,7 @@ const AddCar = () => {
 
   const HandleClicked = () => {
     axios
-    .post("http://localhost:3005/car/createcar", data)
+    .post("https://attryb-project.onrender.com/car/createcar", data)
     .then((res) => {
       if (res.status == 200) {
        console.log("res",res)

@@ -13,7 +13,7 @@ const Car = () => {
       const payload = { id };
       // console.log("payload", payload);
       const del = await axios.delete(
-        `http://localhost:3005/todo/deletecar/${id}`
+        `http://localhost:3005/car/deletecar/${id}`
       );
       // console.log("del", del);
     } catch (error) {
@@ -22,7 +22,7 @@ const Car = () => {
   };
   const fetchData = async () => {
     try {
-      const response = await fetch("http://localhost:3002/car/getallcar");
+      const response = await fetch("https://attryb-project.onrender.com/car/getallcar");
       const json = await response.json();
     //   console.log("data", json.data.content);
 
