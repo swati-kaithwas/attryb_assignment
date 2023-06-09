@@ -19,11 +19,10 @@ const createCar = async (req, res) => {
     description: description,
     model_no:model_no,
     };
-    // let car_images = null;
-    var baseurl =" http://localhost:3002/car/"
-    if(req.file!= undefined){
-        var car_images = req.file.filename;
-        obj.car_images = baseurl+"car_images/"+car_images;
+    
+    if(req.file!=undefined){
+      var car_images= req.file.filename;
+        obj.car_images = "http://localhost:3005/"+"carimages/"+car_images
     }
     const createcar = await Carservice.createcar(obj);
     if (!createcar)
@@ -50,7 +49,10 @@ const getAllCar = async (req, res) => {
       */
   
     try {
+      
       const data = await Carservice.findAll(req.query);
+      console.log(data,"data")
+
       if (!data)
         return sendResponse(res, 400, {
           status: false,
@@ -58,7 +60,7 @@ const getAllCar = async (req, res) => {
         });
       return sendResponse(res, 200, {
         status: true,
-        data: data,
+        data: data,img ,
         message: "success",
       });
     } catch (error) {
@@ -144,8 +146,8 @@ const getAllCar = async (req, res) => {
           1. id is required
           2. upadte car car name,car type ,model no and description
           */
-      let id = req.params.id;
-      let { car_name,car_type, description,model_no  } = req.body;
+      // let id = req.params.id;
+      let { id, car_name,car_type, description,model_no  } = req.body;
       if (!id)
         return sendResponse(res, 400, {
           status: false,

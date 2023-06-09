@@ -1,38 +1,36 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router";
+import {useNavigate} from "react-router";
 import axios from "axios";
-import swal from 'sweetalert';
+import swal from "sweetalert";
 const Sign = () => {
-  const [data,setData] = useState("");
+  const [data, setData] = useState({
+    name: "",
+    email: "",
+    password: "",
+  });
   const navigate = useNavigate();
-  
 
   const handleFormSubmit = () => {
- 
-      axios.post("http://localhost:3002/users/signup", data)
-      .then((res)=>{
-        if(res.data.success){
-        swal(`${res.data.message}`)
-        window.location.reload();
+    axios
+      .post("http://localhost:3005/users/signup", data)
+      .then((res) => {
+        console.log({ res });
+        if (res.data.status) {
+          swal(`${res.data.message}`);
+          navigate("/");
+        } else {
+          swal(`${res.message}`);
         }
-        else{
-            swal(`${res.data.message}`)  
-        }
-
-      
-      }).catch((err)=>{
-        console.log(err)
       })
-   
+      .catch((err) => {
+        console.log(err);
+      });
   };
-  function handleKeyPress(event) {
-    const charCode = event.which ? event.which : event.keyCode;
-    const char = String.fromCharCode(charCode);
-    const regex = /^[A-Za-z]+$/;
-    if (!regex.test(char)) {
-      event.preventDefault();
-    }
-  }
+
+  const handleChangeInput = (event) => {
+    const { name, value } = event.target;
+    setData((prevData) => ({ ...prevData, [name]: value }));
+  };
 
   return (
     <div class="bg-secondry ">
@@ -47,8 +45,7 @@ const Sign = () => {
             name="name"
             placeholder="Name"
             value={data?.name}
-              onKeyPress={handleKeyPress}
-              onChange={handleFormSubmit}
+            onChange={(e) => handleChangeInput(e)}
           />
           <input
             class="form-control mt-3"
@@ -56,8 +53,7 @@ const Sign = () => {
             name="email"
             placeholder="Email"
             value={data?.email}
-            onChange={handleFormSubmit}
-            pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$"
+            onChange={(e) => handleChangeInput(e)}
           />
 
           <input
@@ -66,11 +62,13 @@ const Sign = () => {
             name="password"
             placeholder="Password"
             value={data?.password}
-              onChange={handleFormSubmit}
+            onChange={(e) => handleChangeInput(e)}
           />
 
           <div class="d-flex gap-3">
-            <button class="btn btn-primary my-5"  onClick={handleFormSubmit}>Sign-up</button>
+            <button class="btn btn-primary my-5" onClick={handleFormSubmit}>
+              Sign-up
+            </button>
             <button class="btn btn-primary my-5" onClick={() => navigate("/")}>
               Log-in
             </button>

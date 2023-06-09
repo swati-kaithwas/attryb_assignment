@@ -1,8 +1,12 @@
 const sendResponse = require("../helper/responseSender");
- const setJwtToken = require("../middleware/jwtAuth");
+const setJwtToken = require("../middleware/jwtAuth");
 const Userservice = require("../service/user");
 const crypto = require("crypto-js");
 const validator = require("email-validator");
+const jwt = require("jsonwebtoken");
+const JWT_SECRET = "sfgjgsuuhduhudsusu";
+const User = require("../model/user");
+const bcrypt = require("bcryptjs");
 const signup = async (req, res) => {
   try {
     /*
@@ -45,8 +49,13 @@ const signup = async (req, res) => {
         message: "Email already exist",
       });
     }
-    let Key = "swatikaithwas";
-    let hashedPass = crypto.HmacSHA512(password, Key);
+
+
+  //  let saltRounds = 90;
+  //  let  salt = bcrypt.genSaltSync(saltRounds);
+    // let hashedPass = crypto.HmacSHA512(password, Key);
+    const hashedPass = bcrypt.hashSync(password);
+    console.log(hashedPass,"degefgejbfjgfrj")
     const user = await Userservice.create({
       email: email.toLowerCase(),
       password: hashedPass,
@@ -71,114 +80,93 @@ const signup = async (req, res) => {
   }
 };
 
+
 const login = async (req, res) => {
-    try {
-      /*
-          1.email,password is required
-          */
-  
-      const { email, password } = req.body;
-      // validate field
-      if (!email || !password) {
-        return sendResponse(res, 400, {
-          status: false,
-          message: " Email or Password is required!",
-        });
-      }
-      //   check if user is exist
-      let isExist = await Userservice.findUserByMail(email);
-      console.log("isExist", isExist);
-      if (!isExist)
-        return sendResponse(res, 400, {
-          status: false,
-          message: "Either email or password incorrect.",
-        });
-      // compare password
-      let isPasswordCorrect = await Userservice.validatePassword(
-        password,
-        isExist.password
-      );
-      console.log(isPasswordCorrect, "isPass");
-      if (!isPasswordCorrect)
-        return res.send({
-          status: false,
-          messaage: "incorrect",
-        });
-      // apply jwt token
-      isExist.userToken = await setJwtToken({
-        userId: isExist._id,
-        userRole: isExist.user_role,
-      });
-      res.status(200).json({ status: true, data: isExist });
-      isExist.save();
-    } catch (error) {
-      console.log(error);
-      return sendResponse(res, 500, {
-        satus: false,
-        message: "Internal Error",
-      });
+  const { email, password } = req.body;
+  try {
+    if (!email || !password) {
+      return res.status(400).json({ message: "Please enter all fields" });
     }
-  };
+    const user = await User.findOne({ email });
+    console.log("user0",user)
+    if (!user) {
+      return res.status(400).json({ message: "User does not exists" });
+    }
 
+    const isMatch =  await bcrypt.compareSync(password, user.password);
+   
+    if (!isMatch) {
+      return res.status(400).json({ message: "Invalid credentials" });
+    }
+    const token = jwt.sign({ _id: user._id }, JWT_SECRET, { expiresIn: "3d" });
+    res
+      .status(200)
+      .json({
+        token,
+        user: { id: user._id, name: user.name, email: user.email },
+        message:"login successfully"
+      });
+  } catch (err) {
+    res.status(500).json({ message: "Something went wrong",error:err.message });
+  }
+};
 
-  const UpadteProfile = async (req, res) => {
-    try {
-      /*
+const UpadteProfile = async (req, res) => {
+  try {
+    /*
           1. id is required
           */
-      let { id, name } = req.body;
-      if (!id)
-        return sendResponse(res, 400, {
-          status: false,
-          message: " Id is required !",
-        });
-      let obj = {
-        id,
-        name,
-      };
-      // update profile function
-      let content = await Userservice.updateProfile(id, obj);
-  
-      if (!content)
-        return sendResponse(400, res, {
-          status: false,
-          message: "profile not update !",
-        });
-      return res.status(200).send({
-        status: true,
-        data: content,
-        message: "sucessfully update profile!",
-      });
-    } catch (error) {
-      console.log(error);
-      return sendResponse(res, 500, {
+    let { id, name } = req.body;
+    if (!id)
+      return sendResponse(res, 400, {
         status: false,
-        message: "Internal Error!",
+        message: " Id is required !",
       });
-    }
-  };
-  const logout = async (req, res) => {
-    try {
-      /*
+    let obj = {
+      id,
+      name,
+    };
+    // update profile function
+    let content = await Userservice.updateProfile(id, obj);
+
+    if (!content)
+      return sendResponse(400, res, {
+        status: false,
+        message: "profile not update !",
+      });
+    return res.status(200).send({
+      status: true,
+      data: content,
+      message: "sucessfully update profile!",
+    });
+  } catch (error) {
+    console.log(error);
+    return sendResponse(res, 500, {
+      status: false,
+      message: "Internal Error!",
+    });
+  }
+};
+const logout = async (req, res) => {
+  try {
+    /*
           1.user token =null
           */
-      let isLoggedOut = await userServices.logout(req.tokenData);
-      if (!isLoggedOut)
-        return res
-          .status(400)
-          .json({ status: false, message: "Unable to logout." });
-      res.status(200).json({ status: true, message: "successfully logged out" });
-    } catch (error) {
-      console.log("error in logout api: ", error);
-      res.status(500).json({ status: false, message: "Internal error" });
-    }
-  };
-  
-  module.exports = {
-    signup,
-    login,
-    UpadteProfile,
-    logout,
-  
-    
-  };
+    let isLoggedOut = await userServices.logout(req.tokenData);
+    if (!isLoggedOut)
+      return res
+        .status(400)
+        .json({ status: false, message: "Unable to logout." });
+    res.status(200).json({ status: true, message: "successfully logged out" });
+  } catch (error) {
+    console.log("error in logout api: ", error);
+    res.status(500).json({ status: false, message: "Internal error" });
+  }
+};
+
+module.exports = {
+  signup,
+  login,
+  UpadteProfile,
+  logout,
+};

@@ -19,6 +19,7 @@ const findAll = async (query) => {
     const result = {};
     var searchFiled = query.search || false;
     const total = await Car.countDocuments().exec();
+ 
     result.total = total;
     if (endIndex < total) {
       result.next = {
@@ -67,9 +68,9 @@ const GetById = async (id) => {
 };
 const updateCar = async (id, obj) => {
   try {
-    const Id = id.replace(":", "");
+    // const Id = id.replace(":", "");
     const data = await Car.findByIdAndUpdate(
-      { _id: Id },
+      { _id: id },
       { $set: obj },
       { new: true }
     );

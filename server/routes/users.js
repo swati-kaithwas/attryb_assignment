@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 const AuthController = require("../controller/user") 
-const { jwtChecker } = require('../middleware/jwtAuth');
+// const { jwtChecker } = require('../middleware/jwtAuth');
 router.use((req, res, next) => {
   console.log(
     "TEST ROUTE: " + req.originalUrl + "::" + new Date().toISOString()
@@ -15,5 +15,5 @@ router.get('/', function(req, res, next) {
 router.post("/signup",AuthController.signup);
 router.post("/login",AuthController.login);
 router.put("/updateprofile",AuthController.UpadteProfile);
-router.get("/logout",jwtChecker,AuthController.logout);
+// router.get("/logout",jwtChecker,AuthController.logout);
 module.exports = router;

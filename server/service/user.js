@@ -1,6 +1,5 @@
 const User = require("../model/user");
-const bcrypt = require('bcrypt');
-
+const bcrypt =require("bcryptjs")
 const findUserByMail = async(email)=>{
     try{
     const data = await User.findOne({email:email});
@@ -22,17 +21,7 @@ const create =async(data)=>{
         return false;
     }
 }
-const validatePassword = async (pass, currPass) => {
-    try {
-      let isCorrect = await bcrypt.compare(pass, currPass);
-      console.log("is", isCorrect);
-      return isCorrect;
-    } catch (error) {
-      // Handle any potential errors from bcrypt.compare
-      console.error(error);
-      return false;
-    }
-  };
+
 const updateProfile = async (id,obj)=>{
     try{
         const data = await User.findByIdAndUpdate({_id:id},{$set:obj},{new:true})
@@ -47,6 +36,5 @@ const updateProfile = async (id,obj)=>{
 module.exports={
     findUserByMail,
     create,
-    validatePassword,
     updateProfile,
 }
