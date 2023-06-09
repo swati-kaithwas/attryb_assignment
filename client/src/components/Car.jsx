@@ -1,25 +1,14 @@
 import React, { useState } from "react";
 import { useEffect } from "react";
 import { useNavigate } from "react-router";
-import axios from "axios";
+
 const Car = () => {
   const [data, setData] = useState([]);
 
   const [search, setSearch] = useState('')
   const navigate = useNavigate();
 
-  const handleDeletefunc = async (id) => {
-    try {
-      const payload = { id };
-      // console.log("payload", payload);
-      const del = await axios.delete(
-        `http://localhost:3005/car/deletecar/${id}`
-      );
-      // console.log("del", del);
-    } catch (error) {
-      console.log("Error ", error);
-    }
-  };
+ 
   const fetchData = async () => {
     try {
       const response = await fetch("https://attryb-project.onrender.com/car/getallcar");
