@@ -13,7 +13,7 @@ const Car = () => {
     try {
       const response = await fetch("https://attryb-project.onrender.com/car/getallcar");
       const json = await response.json();
-    //   console.log("data", json.data.content);
+       console.log("data", json.data.content);
 
       setData(json.data.content);
     } catch (error) {
