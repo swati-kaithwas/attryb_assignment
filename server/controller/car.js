@@ -22,7 +22,8 @@ const createCar = async (req, res) => {
     
     if(req.file!=undefined){
       var car_images= req.file.filename;
-        obj.car_images = "http://localhost:3005/"+"carimages/"+car_images
+        // obj.car_images = "http://localhost:3005/"+"carimages/"+car_images
+        obj.car_images = "https://attryb-project.onrender.com/"+"carimages/"+car_images
     }
     const createcar = await Carservice.createcar(obj);
     if (!createcar)
