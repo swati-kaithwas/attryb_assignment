@@ -13,9 +13,9 @@ const Car = () => {
     try {
       const response = await fetch("https://attryb-project.onrender.com/car/getallcar");
       const json = await response.json();
-       console.log("data", json.data);
+       console.log("data", json.data.content);
 
-      setData(json.data);
+      setData(json.data.content);
     } catch (error) {
       console.log("Error fetching data:", error);
     }
